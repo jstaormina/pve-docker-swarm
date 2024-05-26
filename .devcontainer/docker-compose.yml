@@ -1,0 +1,15 @@
+---
+services:
+  workspace:
+    image: workspace
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - USERNAME=${USER}
+    volumes:
+      - ${PWD}:/workspace
+      - ${HOME}/.ssh:${HOME}/.ssh
+      - ${HOME}/.aws:${HOME}/.aws
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: tail -f /dev/null  

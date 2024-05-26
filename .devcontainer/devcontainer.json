@@ -1,0 +1,19 @@
+{
+    "name": "workspace-dev-container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "workspace",
+    "workspaceFolder": "/workspace",
+    "shutdownAction": "stopCompose",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-azuretools.vscode-docker",
+          "VisualStudioExptTeam.vscodeintellicode",
+          "esbenp.prettier-vscode",
+          "dbaeumer.vscode-eslint",
+          "alphabotsec.vscode-eclipse-keybindings",
+          "hashicorp.terraform"
+        ]
+      }
+    }
+  }
