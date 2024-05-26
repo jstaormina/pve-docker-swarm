@@ -1,0 +1,9 @@
+pve_username = "serviceaccount@pam"
+pve_password = "changeme123"
+pve_endpoint  = "https://192.168.1.20:8006/"
+swarm_network_address = "192.168.1."
+swarm_manager_id = "150"
+swarm_servers = ["200", "201", "202"]
+swarm_gateway = "192.168.1.1"
+vm_image_url  = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
+cicd_pub_key_path = "/home/foo/.ssh/id_rsa.pub"
