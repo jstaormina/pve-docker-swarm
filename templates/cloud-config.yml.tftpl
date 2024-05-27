@@ -26,6 +26,8 @@ write_files:
   - path: /etc/sysctl.d/enabled_ipv4_forwarding.conf
     content: |
       net.ipv4.conf.all.forwarding=1
+hostname: ${host_name}      
+manage_etc_hosts: true      
 packages:
   - qemu-guest-agent
   - net-tools

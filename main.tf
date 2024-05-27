@@ -29,7 +29,6 @@ locals {
         "docker swarm init --advertise-addr ${var.swarm_network_address}${var.swarm_manager_id}",
         "docker swarm join-token worker -q | tee /tmp/swarm-worker-token.txt"
       ]
-      cloud_init_file = "cloud-config-manager-node.yaml"
     }
     worker = {
       init_cmd = [
@@ -39,13 +38,12 @@ locals {
         "scp -i /etc/ssh/ssh_host_rsa_key -o \"StrictHostKeyChecking no\" ubuntu@${var.swarm_network_address}${var.swarm_manager_id}:/tmp/swarm-worker-token.txt /tmp/swarm-worker-token.txt",
         "docker swarm join --token \"$(cat /tmp/swarm-worker-token.txt)\" ${var.swarm_network_address}${var.swarm_manager_id}:2377"
       ]
-      cloud_init_file = "cloud-config-worker-node.yaml"
     }
   }
 }
 
 resource "proxmox_virtual_environment_file" "cloud_config" {
-  for_each = local.nodes
+  for_each = var.swarm_servers
 
   content_type = "snippets"
   datastore_id = "local"
@@ -55,9 +53,10 @@ resource "proxmox_virtual_environment_file" "cloud_config" {
       cicd_pub_key_path = "${trimspace(file(var.cicd_pub_key_path))}"
       server_public_key = "${trimspace(tls_private_key.rsa_key.public_key_openssh)}"
       private_key       = tls_private_key.rsa_key.private_key_pem
-      init_commands     = each.value.init_cmd
+      init_commands     = local.nodes[each.value == var.swarm_manager_id ? "manager" : "worker"].init_cmd
+      host_name = "swarm-node-${each.value}"
     })
-    file_name = each.value.cloud_init_file
+    file_name = "cloud-config-${each.value}.yaml"
   }
 }
 
@@ -85,7 +84,7 @@ resource "proxmox_virtual_environment_vm" "swarm_node" {
         gateway = var.swarm_gateway
       }
     }
-    user_data_file_id = proxmox_virtual_environment_file.cloud_config[each.value == var.swarm_manager_id ? "manager" : "worker"].id
+    user_data_file_id = proxmox_virtual_environment_file.cloud_config[each.value].id
   }
   network_device {
     bridge   = "vmbr0"
